@@ -79,21 +79,57 @@ def part2():
         dot_index[int(char)].append(len(blocks)-1)
       is_file = True
   
-  # maybe I need to maintain some kind of index of where dots are instead of searching for them every time?
-  for back in range(len(blocks)-1, -1, -1):
-    if blocks[back].startswith('.'):
-      continue
-    for front in range(0, back):
-      if blocks[front].startswith('.'):
-        if len(blocks[back]) < len(blocks[front]):
-          blocks.insert(front, blocks[back])
-          back += 1
-          blocks[front+1] = '.'*(len(blocks[front+1]) - len(blocks[back]))
-          blocks[back] = '.'*len(blocks[back])
-          break
-        elif len(blocks[front]) == len(blocks[back]):
-          blocks[front], blocks[back] = blocks[back], blocks[front]
-          break
+  # for back in range(len(blocks)-1, -1, -1):
+  #   if blocks[back].startswith('.'):
+  #     continue
+  #   for front in range(0, back):
+  #     if blocks[front].startswith('.'):
+  #       if len(blocks[back]) < len(blocks[front]):
+  #         blocks.insert(front, blocks[back])
+  #         back += 1
+  #         blocks[front+1] = '.'*(len(blocks[front+1]) - len(blocks[back]))
+  #         blocks[back] = '.'*len(blocks[back])
+  #         break
+  #       elif len(blocks[front]) == len(blocks[back]):
+  #         blocks[front], blocks[back] = blocks[back], blocks[front]
+  #         break
+
+
+  # this approach is extremly finnicky, since inserting blocks requires updating all entries that are higher then the index of the inserted block
+  # back  = len(blocks) - 1
+  # while back >= 0:
+  #   if blocks[back].startswith('.'):
+  #     back -= 1
+  #     continue
+  #   if len(blocks[back]) > max(dot_index.keys()):
+  #     back -= 1
+  #     continue
+  #   lowest_index = len(blocks)
+  #   size_at_index = None
+  #   for size, indexes in dot_index.items():
+  #     if size < len(blocks[back]):
+  #       continue
+  #     for index in indexes:
+  #       if index < lowest_index:
+  #         lowest_index = index
+  #         size_at_index = size
+  #   if len(blocks[back]) < size_at_index:
+  #     # split
+  #     blocks.insert(lowest_index, blocks[back])
+  #     blocks[lowest_index+1] = '.'*(size_at_index - len(blocks[lowest_index]))
+  #     back += 1
+  #     blocks[back] = '.'*len(blocks[back])
+  #     dot_index[size_at_index].remove(lowest_index)
+  #     if len(blocks[lowest_index+1]) not in dot_index:
+  #       dot_index[len(blocks[lowest_index+1])] = []
+  #     dot_index[len(blocks[lowest_index+1])].append(lowest_index+1)
+  #   else:
+  #     # swap
+  #     blocks[lowest_index], blocks[back] = blocks[back], blocks[lowest_index]
+  #     dot_index[size_at_index].pop(0)
+  #   back -= 1
+      
+    
 
   checksum = 0
   compacted = "".join(blocks)
