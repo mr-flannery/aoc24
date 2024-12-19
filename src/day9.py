@@ -59,7 +59,7 @@ def part1():
   return checksum
 
 def part2():
-  input = read_input(9, True)
+  input = read_input(9, False)
   
   file_id = 0
   is_file = True
@@ -79,20 +79,25 @@ def part2():
         dot_index[int(char)].append(len(blocks)-1)
       is_file = True
   
-  # for back in range(len(blocks)-1, -1, -1):
-  #   if blocks[back].startswith('.'):
-  #     continue
-  #   for front in range(0, back):
-  #     if blocks[front].startswith('.'):
-  #       if len(blocks[back]) < len(blocks[front]):
-  #         blocks.insert(front, blocks[back])
-  #         back += 1
-  #         blocks[front+1] = '.'*(len(blocks[front+1]) - len(blocks[back]))
-  #         blocks[back] = '.'*len(blocks[back])
-  #         break
-  #       elif len(blocks[front]) == len(blocks[back]):
-  #         blocks[front], blocks[back] = blocks[back], blocks[front]
-  #         break
+  print(len(blocks))
+  back = len(blocks) - 1
+  while back >= 0:
+    print(back)
+    if blocks[back].startswith('.'):
+      back -= 1
+      continue
+    for front in range(0, back):
+      if blocks[front].startswith('.'):
+        if len(blocks[back]) < len(blocks[front]):
+          blocks.insert(front, blocks[back])
+          back += 1
+          blocks[front+1] = '.'*(len(blocks[front+1]) - len(blocks[back]))
+          blocks[back] = '.'*len(blocks[back])
+          break
+        elif len(blocks[front]) == len(blocks[back]):
+          blocks[front], blocks[back] = blocks[back], blocks[front]
+          break
+    back -= 1
 
 
   # this approach is extremly finnicky, since inserting blocks requires updating all entries that are higher then the index of the inserted block
@@ -128,8 +133,6 @@ def part2():
   #     blocks[lowest_index], blocks[back] = blocks[back], blocks[lowest_index]
   #     dot_index[size_at_index].pop(0)
   #   back -= 1
-      
-    
 
   checksum = 0
   compacted = "".join(blocks)
