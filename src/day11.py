@@ -33,29 +33,37 @@ class Node:
     self.value = value
     self.children = []
 
-  def expand(self, index, depth):
-    if depth == 0:
-      return
+  def expand(self, index):
+    # if depth == 0:
+    #   return
     
-    for child_val in apply_rules(self.value):
-      if child_val not in index:
-        node = Node(child_val)
-        index[child_val] = node
-        node.expand(index, depth - 1)
-        self.children.append(node)
-      else:
-        node = index[child_val]
-        self.children.append(node)
-        node.expand(index, depth - 1)        
+    if not self.children:
+      for child_val in apply_rules(self.value):
+        if child_val not in index:
+          node = Node(child_val)
+          index[child_val] = node
+          # node.expand(index, depth - 1)
+          self.children.append(node)
+        else:
+          node = index[child_val]
+          self.children.append(node)
+        # node.expand(index, depth - 1)        
+    
+    for child in self.children:
+      if not child.children:
+        child.expand(index)
 
-  def children_at_depth(self, depth, cad_index):
+  def children_at_depth(self, depth, cad_index, index):
+    if not self.children:
+      self.expand(index)
+    
     if depth == 1:
       return len(self.children)
     else:
       sum = 0
       for child in self.children:
         if (child.value, depth - 1) not in cad_index:
-          cad_index[(child.value, depth - 1)] = child.children_at_depth(depth - 1, cad_index)
+          cad_index[(child.value, depth - 1)] = child.children_at_depth(depth - 1, cad_index, index)
         sum += cad_index[(child.value, depth - 1)]
       return sum
   
@@ -83,18 +91,18 @@ def part2():
   index = {}
   cad_index = {}
 
-  blinks = 25
+  blinks = 75
 
   for i in range(len(input)):
     val = input[i]
     if val not in index:
       node = Node(val)
       index[val] = node
-      node.expand(index, blinks)
+      # node.expand(index, blinks)
 
   sum = 0
   for i in range(len(input)):
-    sum += index[input[i]].children_at_depth(blinks, cad_index)
+    sum += index[input[i]].children_at_depth(blinks, cad_index, index)
 
   return sum
 
