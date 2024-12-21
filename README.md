@@ -1,3 +1,5 @@
 - if every iteration has unique state => iterative
 - if results can be reused => recursive + @cache
 - maybe try going recursive first next time...
+- go for the dumbest approach first
+  - even if it fails for part2, it's a helpful first step
