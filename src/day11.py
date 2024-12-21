@@ -1,4 +1,5 @@
 import copy
+from functools import cache
 import re
 
 def read_input(day, sample=False):
@@ -106,6 +107,24 @@ def part2():
 
   return sum
 
+
+@cache
+def solve(num, blinks):
+  if blinks == 0:
+    return 1
+  
+  child_vals = apply_rules(num)
+  return sum(solve(child_val, blinks - 1) for child_val in child_vals) if blinks > 0 else 1
+
+# TODO: can I build this again using `@cache`?
+def part2_2():
+  input = read_input(11, False)
+
+  return sum(solve(num, 75) for num in input)
+
+
 if __name__ == '__main__':
   # print(part1()) # 172484
   print(part2())
+  print(part2_2())
+

@@ -1,0 +1,3 @@
+- if every iteration has unique state => iterative
+- if results can be reused => recursive + @cache
+- maybe try going recursive first next time...
