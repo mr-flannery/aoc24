@@ -3,3 +3,5 @@
 - maybe try going recursive first next time...
 - go for the dumbest approach first
   - even if it fails for part2, it's a helpful first step
+- thinking about theoretical complexity for a minute might be a good idea
+  - e.g. I tried running a search for day 16, when e.g. Dijkstra is a better idea
