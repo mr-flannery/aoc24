@@ -168,11 +168,13 @@ def part2():
 
   [print(''.join(row)) for row in input]
 
-  return num_tiles
+  # Calculate the scores for the paths
+  path_scores = {}
+  for (row, col) in tiles:
+    path_scores[(row, col)] = scores[(row, col)][0]
+
+  return path_scores
   
-      
-
-
 
 if __name__ == '__main__':
   # print(part1())
