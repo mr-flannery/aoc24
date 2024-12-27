@@ -81,7 +81,7 @@ def part1():
   
 
 def part2():
-  input = read_input(16, True)
+  input = read_input(16, False)
 
   current_row, current_col = None, None
   exit_row, exit_col = None, None
@@ -96,84 +96,76 @@ def part2():
         input[row][col] = '.'
 
   queue = PriorityQueue()
-  queue.put((0, (current_row, current_col, 0, 'E', None, None)))
+  queue.put((0, (current_row, current_col, 'E', [])))
 
   visited = set()
   scores = {}
 
   while not queue.empty():
-    row, col, score, direction, prev_row, prev_col = queue.get()[1]
+    score, (row, col, direction, path) = queue.get()
     
     if (row, col) not in scores:
-      scores[(row, col)] = (score, [(prev_row, prev_col)])
+      scores[(row,col)] = {score: [path]}
     else:
-      if score <= scores[(row, col)][0] + 1001:
-        scores[(row, col)][1].append((prev_row, prev_col))
+      if score not in scores[(row,col)]:
+        scores[(row,col)][score] = [path]
       else:
-        scores[(row, col)] = (score, [(prev_row, prev_col)])
+        scores[(row,col)][score].append(path)
       
-    if (row, col) in visited:
+    if (row, col, direction) in visited:
       continue
 
-    visited.add((row, col))
+    visited.add((row, col, direction))
 
     match direction:
       case 'N':
         if input[row-1][col] == '.':
-          queue.put((score + 1, (row-1, col, score + 1, 'N', row, col)))
+          queue.put((score + 1, (row-1, col, 'N', path + [(row, col, direction)])))
         if input[row][col-1] == '.':
-          queue.put((score + 1001, (row, col-1, score + 1001, 'W', row, col)))
+          queue.put((score + 1001, (row, col-1,'W', path + [(row, col, direction)])))
         if input[row][col+1] == '.':
-          queue.put((score + 1001, (row, col+1, score + 1001, 'E', row, col)))
+          queue.put((score + 1001, (row, col+1,'E', path + [(row, col, direction)])))
       case 'S':
         if input[row+1][col] == '.':
-          queue.put((score + 1, (row+1, col, score + 1, 'S', row, col)))
+          queue.put((score + 1, (row+1, col, 'S', path + [(row, col, direction)])))
         if input[row][col-1] == '.':
-          queue.put((score + 1001, (row, col-1, score + 1001, 'W', row, col)))
+          queue.put((score + 1001, (row, col-1,'W', path + [(row, col, direction)])))
         if input[row][col+1] == '.':
-          queue.put((score + 1001, (row, col+1, score + 1001, 'E', row, col)))
+          queue.put((score + 1001, (row, col+1,'E', path + [(row, col, direction)])))
       case 'E': 
         if input[row][col+1] == '.':
-          queue.put((score + 1, (row, col+1, score + 1, 'E', row, col)))
+          queue.put((score + 1, (row, col+1, 'E', path + [(row, col, direction)])))
         if input[row-1][col] == '.':
-          queue.put((score + 1001, (row-1, col, score + 1001, 'N', row, col)))
+          queue.put((score + 1001, (row-1, col,'N', path + [(row, col, direction)])))
         if input[row+1][col] == '.':
-          queue.put((score + 1001, (row+1, col, score + 1001, 'S', row, col)))
+          queue.put((score + 1001, (row+1, col,'S', path + [(row, col, direction)])))
       case 'W':
         if input[row][col-1] == '.':
-          queue.put((score + 1, (row, col-1, score + 1, 'W', row, col)))
+          queue.put((score + 1, (row, col-1, 'W', path + [(row, col, direction)])))
         if input[row-1][col] == '.':
-          queue.put((score + 1001, (row-1, col, score + 1001, 'N', row, col)))
+          queue.put((score + 1001, (row-1, col,'N', path + [(row, col, direction)])))
         if input[row+1][col] == '.':
-          queue.put((score + 1001, (row+1, col, score + 1001, 'S', row, col)))
+          queue.put((score + 1001, (row+1, col,'S', path + [(row, col, direction)])))
 
-  num_tiles = 0
-  tiles = []
+  tiles = set()
   queue = [(exit_row, exit_col)]
-  visited = set()
   while queue:
     row, col = queue.pop()
-    if (row, col) in visited:
+    if (row, col) in tiles:
       continue
-    visited.add((row, col))
-    num_tiles += 1
-    tiles.append((row, col))
+    tiles.add((row, col))
     if (row, col) != (current_row, current_col):
-      for prev_row, prev_col in scores[(row, col)][1]:
-        if scores[(prev_row, prev_col)][0] % 1000 == (scores[(row, col)][0] % 1000) - 1:
+      eligble_paths = scores[(row,col)][min(scores[(row,col)].keys())]
+      for path in eligble_paths:
+        for prev_row, prev_col, prev_dir in path:
           queue.append((prev_row, prev_col))
 
   for (row, col) in tiles:
     input[row][col] = 'O'
 
   [print(''.join(row)) for row in input]
-
-  # Calculate the scores for the paths
-  path_scores = {}
-  for (row, col) in tiles:
-    path_scores[(row, col)] = scores[(row, col)][0]
-
-  return path_scores
+  
+  return len(tiles)
   
 
 if __name__ == '__main__':
